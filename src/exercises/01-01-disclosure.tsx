@@ -3,7 +3,7 @@ import { FunctionComponent, ReactNode } from 'react'
 import * as ExcersiseLayout from '../components/excercise-layout'
 
 type DisclosureProps = {
-    className?: string
+    className?: string | undefined
     summary: ReactNode
     children: ReactNode
 }
@@ -34,10 +34,6 @@ export default function DisclosurePage() {
             >
                 This is the detailed description of how to simplify react
                 applications!
-            </Disclosure>
-
-            <Disclosure summary="Nicht so eine gute Idee ist">
-                Gruende
             </Disclosure>
         </ExcersiseLayout.Description>
     )

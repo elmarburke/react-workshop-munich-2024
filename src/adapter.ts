@@ -34,6 +34,8 @@ export const questionsQueryKey = ['questions']
 export const getQuestions = async () => {
     const req = await fetch(`${import.meta.env.VITE_API_URL}/questions`)
 
+    await new Promise((resolve) => setTimeout(resolve, 5_000))
+
     return questionsResponseSchema.parse(await req.json())
 }
 

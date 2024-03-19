@@ -1,29 +1,37 @@
-import { useSuspenseQuery } from '@tanstack/react-query'
+import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
 import { FunctionComponent } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Question, getQuestions, questionsQueryKey } from '../adapter'
+import { Navigate } from 'react-router-dom'
+import {
+    Question,
+    calculateResult,
+    getQuestions,
+    questionsQueryKey,
+} from '../adapter'
 import Button from '../components/button'
 import * as PageLayout from '../components/page-layout'
 
 const Quiz: FunctionComponent = () => {
-    const navigate = useNavigate()
     const questionsQuery = useSuspenseQuery({
         queryKey: questionsQueryKey,
         queryFn: getQuestions,
     })
 
+    const mutation = useMutation({
+        mutationFn: calculateResult,
+    })
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
-        // Implement your logic here
+        const formData = new FormData(event.currentTarget)
 
-        // Endpoint: `${import.meta.env.VITE_API_URL}/answers`
-        // HTTP Method: POST
-        // Content-Type: application/json
+        const answers = Object.fromEntries(formData.entries())
 
-        // once you have the answers, you can navigate to the result page
-        // The result you get back has an id that you can use to navigate to the result page:
-        // navigate(`/your-best-match/${result.id}`)
+        mutation.mutate(answers as { [key: string]: string })
+    }
+
+    if (mutation.isSuccess) {
+        return <Navigate to={`/your-best-match/${mutation.data.id}`} />
     }
 
     return (
@@ -64,7 +72,9 @@ const Quiz: FunctionComponent = () => {
                     ))}
 
                     <div className="flex justify-center">
-                        <Button type="submit">Find my best match</Button>
+                        <Button type="submit" disabled={mutation.isPending}>
+                            Find my best match
+                        </Button>
                     </div>
                 </form>
             </PageLayout.Body>
